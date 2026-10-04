@@ -238,6 +238,12 @@
 				overflow: hidden;
 				min-height: 0;
 			}
+			/* 国旗の基準枠を、ロゴ画像と同じ正方形に固定 */
+			.team-photo-placeholder > span {
+				width: 100% !important;
+				height: auto !important;
+				aspect-ratio: 1 / 1;
+			}
 			/* スマホ：1列・ロゴ左／文字右の横並び */
 			@media screen and (max-width: 840px) {
 				.team-grid, .team-grid-5 {
@@ -663,6 +669,7 @@
 						photo2El.innerHTML = '';
 					}
 					document.getElementById('team-modal').classList.add('is-open');
+					document.querySelector('#team-modal .team-modal-box').scrollTop = 0;
 				}
 				// スマホ表示のとき、ハッシュタグを意味の切れ目（|）でだけ改行させる
 				var TAG_BREAKS = [
