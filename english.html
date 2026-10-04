@@ -350,6 +350,25 @@
 				width: 100% !important;
 				height: auto !important;
 				aspect-ratio: 1 / 1;
+				flex: none;
+			}
+			/* iOS Safariで枠が縦長になるため、枠ではなく中の画像側を正方形にする（枠は余白を付けるだけ） */
+			.team-photo-placeholder {
+				aspect-ratio: auto !important;
+				height: auto !important;
+			}
+			.team-photo-placeholder > img {
+				width: 100% !important;
+				height: auto !important;
+				aspect-ratio: 1 / 1;
+				flex: none;
+			}
+			.team-photo-placeholder > span > img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100% !important;
+				height: 100% !important;
 			}
 			/* スマホ：1列・ロゴ左／文字右の横並び */
 			@media screen and (max-width: 840px) {
