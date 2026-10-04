@@ -332,6 +332,58 @@
 				display: inline-block;
 				overflow-wrap: anywhere;
 			}
+			/* ロゴ枠を常に正方形に固定（iOS Safariで画像に引っぱられて縦長になるのを防ぐ） */
+			.team-photo-placeholder {
+				overflow: hidden;
+				min-height: 0;
+			}
+			/* スマホ：1列・ロゴ左／文字右の横並び */
+			@media screen and (max-width: 840px) {
+				.team-grid, .team-grid-5 {
+					grid-template-columns: minmax(0, 1fr) !important;
+					gap: 1.8em !important;
+				}
+				.team-card {
+					display: grid;
+					grid-template-columns: 40% minmax(0, 1fr);
+					column-gap: 1em;
+					align-items: start;
+					align-content: start;
+				}
+				.team-card > .team-photo-placeholder {
+					grid-column: 1;
+					grid-row: 1 / span 4;
+					padding: 0.7em !important;
+					margin: 0 !important;
+				}
+				.team-card > p {
+					grid-column: 2;
+				}
+				.team-photo-placeholder svg {
+					width: 24px;
+					height: 16px;
+					top: 4px !important;
+					left: 4px !important;
+				}
+				.team-category {
+					font-size: 1.1em;
+					margin-bottom: 0.8em !important;
+				}
+				.team-name {
+					font-size: 1em;
+				}
+				.team-title {
+					font-size: 0.85em;
+				}
+				.team-tags {
+					font-size: 0.78em;
+					word-break: normal;
+				}
+				.team-tags span {
+					word-break: normal;
+					overflow-wrap: anywhere;
+				}
+			}
 		</style>
 	</head>
 	<body class="is-preload">
