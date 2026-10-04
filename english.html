@@ -266,18 +266,26 @@
 				text-align: center;
 			}
 			.team-modal-close {
-					min-width: 0;
-				position: absolute;
-				top: 0.8em;
-				left: 50%;
-				transform: translateX(-50%);
+				min-width: 0;
+				position: sticky;
+				top: -1.3em;
+				letter-spacing: 0;
+				text-indent: 0;
+				z-index: 2;
+				display: block;
+				width: 1.6em;
+				height: 1.6em;
+				margin: -1.3em auto -0.3em auto;
+				padding: 0;
 				border: none;
-				background: none;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.92);
+				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 				font-size: 1.5em;
-				line-height: 1;
+				line-height: 1.6em;
+				text-align: center;
 				color: #999;
 				cursor: pointer;
-				padding: 0.2em;
 			}
 			.team-modal-photo {
 				width: 160px;
@@ -353,6 +361,8 @@
 				.team-card > .team-photo-placeholder {
 					grid-column: 1;
 					grid-row: 1 / span 4;
+					align-self: start;
+					height: auto;
 					padding: 0.7em !important;
 					margin: 0 !important;
 				}
@@ -382,6 +392,17 @@
 				.team-tags span {
 					word-break: normal;
 					overflow-wrap: anywhere;
+				}
+				.team-tags .tag-chunk, #team-modal-tags .tag-chunk {
+					display: inline-block;
+					max-width: 100%;
+					word-break: keep-all;
+					overflow-wrap: anywhere;
+				}
+				#team-modal-tags > span {
+					white-space: normal !important;
+					display: inline-block;
+					max-width: 100%;
 				}
 			}
 		</style>

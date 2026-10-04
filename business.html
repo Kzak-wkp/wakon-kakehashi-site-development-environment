@@ -163,18 +163,26 @@
 				text-align: center;
 			}
 			.team-modal-close {
-					min-width: 0;
-				position: absolute;
-				top: 0.8em;
-				left: 50%;
-				transform: translateX(-50%);
+				min-width: 0;
+				position: sticky;
+				top: -1.3em;
+				letter-spacing: 0;
+				text-indent: 0;
+				z-index: 2;
+				display: block;
+				width: 1.6em;
+				height: 1.6em;
+				margin: -1.3em auto -0.3em auto;
+				padding: 0;
 				border: none;
-				background: none;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.92);
+				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 				font-size: 1.5em;
-				line-height: 1;
+				line-height: 1.6em;
+				text-align: center;
 				color: #999;
 				cursor: pointer;
-				padding: 0.2em;
 			}
 			.team-modal-photo {
 				width: 160px;
@@ -246,6 +254,8 @@
 				.team-card > .team-photo-placeholder {
 					grid-column: 1;
 					grid-row: 1 / span 4;
+					align-self: start;
+					height: auto;
 					padding: 0.7em !important;
 					margin: 0 !important;
 				}
@@ -275,6 +285,17 @@
 				.team-tags span {
 					word-break: keep-all;
 					overflow-wrap: anywhere;
+				}
+				.team-tags .tag-chunk, #team-modal-tags .tag-chunk {
+					display: inline-block;
+					max-width: 100%;
+					word-break: keep-all;
+					overflow-wrap: anywhere;
+				}
+				#team-modal-tags > span {
+					white-space: normal !important;
+					display: inline-block;
+					max-width: 100%;
 				}
 			}
 		</style>
@@ -590,6 +611,7 @@
 					document.getElementById('team-modal-tags').innerHTML = card.dataset.tags.split(/\s+(?=#)/).map(function (tag) {
 						return '<span style="white-space: nowrap;">' + tag + '</span>';
 					}).join(' ');
+					applyTagBreaks(document.getElementById('team-modal'));
 					document.getElementById('team-modal-history').innerHTML = card.dataset.history;
 					document.getElementById('team-modal-philosophy').innerHTML = card.dataset.philosophy;
 					document.getElementById('team-modal-track').innerHTML = card.dataset.track;
@@ -642,6 +664,43 @@
 					}
 					document.getElementById('team-modal').classList.add('is-open');
 				}
+				// スマホ表示のとき、ハッシュタグを意味の切れ目（|）でだけ改行させる
+				var TAG_BREAKS = [
+					'#14か国|25社超が投資先', '#35か国|145以上の|サーチファンド支援実績', '#80人超の|サーチャーと提携',
+					'#80件超の|サーチファンドに出資', '#Not a Fund|(自己資金)', '#PEファンドであって|PEファンドに非ず',
+					'#その仕事を、|未来へつなぐ。', '#イタリア初の|専門サーチファンド|投資会社', '#エグゼクティブ・|経営候補人材紹介',
+					'#エンジェル|インベストメント', '#オーストラリア初の|サーチファンド専門ファンド', '#サーチファンド|120件超に投資',
+					'#サーチファンドの|世界的権威', '#サーチファンド|出身経営者', '#サーチャーから|オーナー経営者へ',
+					'#ファミリー出資の|独立系投資グループ', '#ベンチャー投資×|サーチファンド投資', '#不動産から|多角経営',
+					'#事業承継の|実務支援', '#事業承継の|経験者', '#事業承継型の|投資も', '#公認会計士・|税理士',
+					'#出張整備Seibii|創業者', '#初のオセアニア外への|投資を実行', '#創業者が支える|シードVC',
+					'#国内初の|サーチファンド|MBO達成', '#多国籍|サーチファンド投資家', '#弁護士×|元スタートアップCOO',
+					'#承継後1年半で|売上2倍', '#日本サーチファンドの|草分け', '#日本初の|Fund of Search Funds',
+					'#日本初の|サーチファンド|支援機関', '#日本最大の|サーチファンドEXIT|経験者', '#東証一部上場を|果たした|創業経営者',
+					'#次世代|リーダー育成', '#環境エネルギー|コンサルティング', '#草の根|アントレプレナー支援',
+					'#財務診断の|プロフェッショナル', '#超長期で|経営者に伴走'
+				];
+				var TAG_BREAK_MAP = {};
+				TAG_BREAKS.forEach(function (t) { TAG_BREAK_MAP[t.replace(/\|/g, '')] = t.split('|'); });
+				function applyTagBreaks(root) {
+					if (!window.matchMedia('(max-width: 840px)').matches) return;
+					root.querySelectorAll('.team-tags > span, #team-modal-tags > span').forEach(function (span) {
+						var key = span.textContent.replace(/\u2060/g, '').trim();
+						var parts = TAG_BREAK_MAP[key];
+						if (!parts) return;
+						span.innerHTML = parts.map(function (p, i) {
+							var s = p.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+							return '<span class="tag-chunk">' + (i === 0 ? s.replace('#', '#&#8288;') : s) + '</span>';
+						}).join('');
+					});
+					// 肩書の「：」より後ろ（人名）は途中で改行しない
+					root.querySelectorAll('.team-title, #team-modal-title').forEach(function (el) {
+						if (el.children.length || el.textContent.indexOf('：') < 0) return;
+						var i = el.textContent.indexOf('：') + 1;
+						el.innerHTML = el.textContent.slice(0, i) + '<span style="display: inline-block; white-space: nowrap;">' + el.textContent.slice(i) + '</span>';
+					});
+				}
+				document.addEventListener('DOMContentLoaded', function () { applyTagBreaks(document); });
 				function closeTeamModal() {
 					document.getElementById('team-modal').classList.remove('is-open');
 				}
