@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -m pip show pillow)",
+      "Bash(python3 -c \"from PIL import Image; print\\('ok'\\)\")",
+      "Bash(grep -on \".\\\\{0,50\\\\}#0f3552.\\\\{0,10\\\\}\" business.html english.html contact.html contact-en.html)",
+      "Bash(grep -on \".\\\\{0,25\\\\}#0072CE.\\\\{0,5\\\\}\" index.html)",
+      "Bash(grep -on \".\\\\{0,25\\\\}#0B2F6B.\\\\{0,5\\\\}\" index.html)",
+      "Bash(grep -on \".\\\\{0,30\\\\}#A9CDEE.\\\\{0,10\\\\}\" index.html company.html business.html contact.html english.html contact-en.html)",
+      "Bash(identify images/favicon.png)",
+      "Bash(python3 -c ' *)",
+      "Bash(cygpath -w \"C:\\\\Users\\\\kzak1\\\\OneDrive\\\\デスクトップ\\\\html5up-twenty\\\\company.html\")"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+	<url>
+		<loc>https://www.wakon-kp.com/</loc>
+		<image:image>
+			<image:loc>https://www.wakon-kp.com/images/yoshikawa-kazuaki.png</image:loc>
+			<image:title>和魂かけはしパートナーズ 代表社員 吉川和明</image:title>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://www.wakon-kp.com/english.html</loc>
+		<image:image>
+			<image:loc>https://www.wakon-kp.com/images/yoshikawa-kazuaki.png</image:loc>
+			<image:title>Kazuaki Yoshikawa, Representative of Wakon Kakehashi Partners</image:title>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://www.wakon-kp.com/company.html</loc>
+		<image:image>
+			<image:loc>https://www.wakon-kp.com/images/yoshikawa-kazuaki-profile.jpg</image:loc>
+			<image:title>和魂かけはしパートナーズ 代表社員 吉川和明</image:title>
+		</image:image>
+	</url>
+</urlset>
