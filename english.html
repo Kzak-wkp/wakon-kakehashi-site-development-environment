@@ -502,6 +502,8 @@
 				transform: rotate(0) scale(1);
 			}
 		</style>
+		<link rel="preload" as="image" href="images/corp-logo-intro-base.png" fetchpriority="high">
+		<link rel="preload" as="image" href="images/corp-logo-intro-sun.png" fetchpriority="high">
 		<script>
 			// TOPのイントロは、ブラウザを開いている間の最初の1回だけ。動きを減らす設定の人には出さない
 			(function () {
@@ -546,6 +548,7 @@
 						var d = (k * 362).toFixed(1);
 						setMask(sun, 'conic-gradient(from 215deg at 47.4% 27.2%, #000 ' + d + 'deg, transparent ' + d + 'deg)');
 					}, function () { setMask(sun, 'none'); });
+					setTimeout(function () { setMask(sun, 'none'); }, 1700);
 				}
 				// ③ 画面の下中央からアーチ形の窓が広がり、ロゴごと画面が消えてTOP画面が現れる
 				function openArch() {
@@ -555,12 +558,24 @@
 						if (t > 0.75) splash.style.opacity = String(1 - (t - 0.75) / 0.25);
 					}, finish);
 				}
-				requestAnimationFrame(function () {
-					requestAnimationFrame(function () { splash.classList.add('is-show'); });
+				// ロゴ画像が2枚とも読み込まれてから動かし始める。3秒で読めなければイントロをやめてページを表示する
+				var started = false;
+				function start() {
+					if (started) return;
+					started = true;
+					void splash.offsetWidth;
+					setTimeout(function () { splash.classList.add('is-show'); }, 30);
+					setTimeout(drawSun, 900);
+					setTimeout(openArch, 3400);
+					setTimeout(finish, 6200);
+				}
+				var imgs = splash.querySelectorAll('img'), left = imgs.length;
+				function loaded() { left--; if (left <= 0) start(); }
+				Array.prototype.forEach.call(imgs, function (im) {
+					if (im.complete && im.naturalWidth) { loaded(); }
+					else { im.addEventListener('load', loaded); im.addEventListener('error', function () { if (!started) { started = true; finish(); } }); }
 				});
-				setTimeout(drawSun, 900);
-				setTimeout(openArch, 3400);
-				setTimeout(finish, 6200);
+				setTimeout(function () { if (!started) { started = true; finish(); } }, 3000);
 			})();
 		</script>
 		<div id="page-wrapper">
