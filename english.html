@@ -448,9 +448,121 @@
 					max-width: 100%;
 				}
 			}
+			/* TOPを開いたときの社名ロゴのイントロ（スクリプトが html に intro-on を付けたときだけ表示） */
+			#intro-splash {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				z-index: 99999;
+				background: #F5DDDD;
+				align-items: center;
+				justify-content: center;
+			}
+			html.intro-on #intro-splash {
+				display: flex;
+			}
+			html.intro-on body {
+				overflow: hidden;
+			}
+			#intro-splash .intro-inner {
+				position: relative;
+				width: 62vw;
+				max-width: 420px;
+				transition: opacity 0.7s ease, transform 0.9s ease;
+			}
+			#intro-splash .intro-inner img {
+				display: block;
+				width: 100%;
+			}
+			/* ① 橋と社名：ふわっと浮かび上がる */
+			#intro-splash .intro-base {
+				opacity: 0;
+				transform: translateY(14px);
+				transition: opacity 1.4s ease, transform 1.6s ease;
+			}
+			#intro-splash.is-show .intro-base {
+				opacity: 1;
+				transform: translateY(0);
+			}
+			/* ② 太陽：筆の流れに沿って時計回りにくるっと描かれる（描画はスクリプトで制御） */
+			#intro-splash .intro-sun {
+				position: absolute;
+				top: 0;
+				left: 0;
+				opacity: 0;
+				transform-origin: 47.4% 27.2%;
+				transform: rotate(-50deg) scale(0.85);
+				transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+			}
+			#intro-splash.is-sun .intro-sun {
+				opacity: 1;
+				transform: rotate(0) scale(1);
+			}
 		</style>
+		<script>
+			// TOPのイントロは、ブラウザを開いている間の最初の1回だけ。動きを減らす設定の人には出さない
+			(function () {
+				try {
+					if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+					if (sessionStorage.getItem('wkpIntroShown')) return;
+					sessionStorage.setItem('wkpIntroShown', '1');
+				} catch (e) { return; }
+				document.documentElement.classList.add('intro-on');
+			})();
+		</script>
 	</head>
 	<body class="is-preload">
+		<div id="intro-splash" aria-hidden="true"><div class="intro-inner"><img class="intro-base" src="images/corp-logo-intro-base.png" alt=""><img class="intro-sun" src="images/corp-logo-intro-sun.png" alt=""></div></div>
+		<script>
+			(function () {
+				var root = document.documentElement;
+				if (!root.classList.contains('intro-on')) return;
+				var splash = document.getElementById('intro-splash');
+				var sun = splash.querySelector('.intro-sun');
+				function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+				function animate(dur, fn, done) {
+					var start = null;
+					function step(now) {
+						if (start === null) start = now;
+						var t = Math.min((now - start) / dur, 1);
+						fn(ease(t), t);
+						if (t < 1) { requestAnimationFrame(step); } else if (done) { done(); }
+					}
+					requestAnimationFrame(step);
+				}
+				function setMask(el, m) { el.style.webkitMaskImage = m; el.style.maskImage = m; }
+				function finish() {
+					root.classList.remove('intro-on');
+					if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+				}
+				// ② 太陽：左下（筆の書き始め）から時計回りに一周して現れる
+				function drawSun() {
+					setMask(sun, 'conic-gradient(from 215deg at 47.4% 27.2%, #000 0deg, transparent 0deg)');
+					splash.classList.add('is-sun');
+					animate(1500, function (k) {
+						var d = (k * 362).toFixed(1);
+						setMask(sun, 'conic-gradient(from 215deg at 47.4% 27.2%, #000 ' + d + 'deg, transparent ' + d + 'deg)');
+					}, function () { setMask(sun, 'none'); });
+				}
+				// ③ 画面の下中央からアーチ形の窓が広がり、ロゴごと画面が消えてTOP画面が現れる
+				function openArch() {
+					animate(1700, function (k, t) {
+						var w = Math.round(k * 1.25 * window.innerWidth), h = Math.round(k * 1.3 * window.innerHeight);
+						setMask(splash, 'radial-gradient(ellipse ' + w + 'px ' + h + 'px at 50% 100%, transparent 98%, #000 100%)');
+						if (t > 0.75) splash.style.opacity = String(1 - (t - 0.75) / 0.25);
+					}, finish);
+				}
+				requestAnimationFrame(function () {
+					requestAnimationFrame(function () { splash.classList.add('is-show'); });
+				});
+				setTimeout(drawSun, 900);
+				setTimeout(openArch, 3400);
+				setTimeout(finish, 6200);
+			})();
+		</script>
 		<div id="page-wrapper">
 
 			<!-- Header -->
@@ -515,7 +627,7 @@
 					<div style="max-width: 900px; margin: 0 auto; border-top: dashed 1px #ccd3e0;">
 						<div style="display: flex; flex-wrap: wrap; gap: 1.5em; padding: 1.2em 0; border-bottom: dashed 1px #ccd3e0;">
 							<div style="width: 130px; color: #1b3a5c; font-size: 0.9em;">2026-11-02</div>
-							<div style="flex: 1; min-width: 200px; color: #1b3a5c; font-size: 0.9em;">Published our investor team</div>
+							<div style="flex: 1; min-width: 200px; color: #1b3a5c; font-size: 0.9em;"><a href="#team" style="color: #1b3a5c; border-bottom: none; text-decoration: none;">Published our investor team<span class="icon solid fa-link" style="font-size: 0.85em; color: #0B2F6B; margin-left: 0.3em;"></span></a></div>
 						</div>
 						<div style="display: flex; flex-wrap: wrap; gap: 1.5em; padding: 1.2em 0; border-bottom: dashed 1px #ccd3e0;">
 							<div style="width: 130px; color: #1b3a5c; font-size: 0.9em;">2026-09-01</div>
@@ -711,7 +823,7 @@
 					<h3 class="team-category reveal-on-scroll">International Investors</h3>
 					<div class="team-grid team-grid-5" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 2.5em 1.5em; margin-bottom: 3em;">
 						<div class="team-card reveal-on-scroll" data-name="Ambit Partners" data-url="https://www.ambit.partners/" data-title="Co-Founders: Rob LeBlanc / Andrew Locke / Niel Wyma" data-tags="#Multinational Search Fund Investor #Backed 145+ Search Funds in 35 Countries #25+ Acquired Companies" data-img="images/投資家/I-1.ambit.jpg" data-img2="images/投資家/I-2.Rob.jpg" data-history="Ambit Partners is a specialist investor in search funds and entrepreneurial acquisitions, established in 2020 by three co-founders: Rob LeBlanc, Andrew Locke, and Niel Wyma. It began when the three combined search fund investment assets they already held personally with USD 2 million from friends and family to make pilot investments in 24 searchers across 16 countries. Its offices span Canada, South Africa, and France. Its mission is to help ambitious acquisition entrepreneurs buy and grow great businesses." data-philosophy="It has a track record of backing more than 140 search funds across more than 35 countries, and has seen more than 25 companies acquired. Assets under management were USD 100 million as of April 2025 (the total of Fund I, co-investment structures, and Fund II). Fund II closed in April 2025 at its USD 60 million hard cap." data-track="Rob LeBlanc graduated from McGill University and holds an MBA from Harvard Business School. An investor and board member with experience in search funds, entrepreneurial acquisitions, and mid-market growth, he worked in investing, advisory, and entrepreneurial roles in North America, Africa, the Middle East, Asia, and Europe before founding Ambit. He now supports searchers and CEOs from acquisition through long-term value creation, focusing on the Americas and Asia-Pacific. He lives in Vancouver. Andrew Locke graduated from Middlebury College and holds an MBA from INSEAD. He led behavioral economics field studies as a Harvard University researcher, then, after management consulting and a secondment as CEO of a solar power company, led post-investment management for four investment portfolios before founding Ambit. He now oversees ten portfolio companies, mainly in Europe. Niel Wyma is from South Africa and holds an MBA from INSEAD. After serving as a consultant at a Bain &amp; Co spin-out and working at a family office, he joined Rob LeBlanc in 2015 and closed about 30 entrepreneur-led acquisitions in three years. He now supports searchers and CEOs in Africa, Europe, and North America." data-searchfund="At our company, Rob LeBlanc has taken on the role of mentor." onclick="openTeamModal(this)">
-							<div class="team-photo-placeholder"><span style="position: relative; display: block; width: 100%; height: 100%;"><img src="images/投資家/I-1.ambit.jpg" alt="Ambit Partners" style="width: 100%; height: 100%; object-fit: cover; display: block; background: #fff;"><svg role="img" aria-label="Flag of France" viewBox="0 0 3 2" width="33" height="22" style="position: absolute; top: 6px; left: 6px; outline: 1px solid rgba(0, 0, 0, 0.18);"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg></span></div>
+							<div class="team-photo-placeholder"><span style="position: relative; display: block; width: 100%; height: 100%;"><img src="images/投資家/I-1.ambit.jpg" alt="Ambit Partners" style="width: 100%; height: 100%; object-fit: cover; display: block; background: #fff;"><svg role="img" aria-label="Flag of Canada" viewBox="0 0 3 2" width="33" height="22" style="position: absolute; top: 6px; left: 6px; outline: 1px solid rgba(0, 0, 0, 0.18);"><rect width="3" height="2" fill="#FFFFFF"/><rect width="0.75" height="2" fill="#D80621"/><rect x="2.25" width="0.75" height="2" fill="#D80621"/><path transform="translate(1.05 0.55) scale(0.009)" fill="#D80621" d="M50,5 L44,18 L37,15 L40,40 L30,30 L27,36 L15,33 L19,46 L13,49 L33,66 L30,74 L48,71 L48,95 L52,95 L52,71 L70,74 L67,66 L87,49 L81,46 L85,33 L73,36 L70,30 L60,40 L63,15 L56,18 Z"/></svg></span></div>
 							<p class="team-name">Ambit Partners <a href="https://www.ambit.partners/" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color: #0B2F6B; border-bottom: none;" aria-label="Open official website"><span class="icon solid fa-link" style="font-size: 0.9em;"></span></a></p>
 							<p class="team-tags"><span>#Multinational Search Fund Investor</span> <span>#Backed 145+ Search Funds in 35 Countries</span> <span>#25+ Acquired Companies</span></p>
 						</div>
