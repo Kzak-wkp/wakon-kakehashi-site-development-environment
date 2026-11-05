@@ -10,8 +10,11 @@
 	</url>
 	<url>
 		<loc>https://www.wakon-kp.com/english.html</loc>
+	</url>
+	<url>
+		<loc>https://www.wakon-kp.com/company-en.html</loc>
 		<image:image>
-			<image:loc>https://www.wakon-kp.com/images/yoshikawa-kazuaki.png</image:loc>
+			<image:loc>https://www.wakon-kp.com/images/yoshikawa-kazuaki-profile.jpg</image:loc>
 			<image:title>Kazuaki Yoshikawa, Representative of Wakon Kakehashi Partners</image:title>
 		</image:image>
 	</url>
